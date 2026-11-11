@@ -193,6 +193,11 @@ button:focus-visible{outline:2px solid var(--crt);outline-offset:3px}
 #settings{background:rgba(5,5,5,.95);justify-content:center;z-index:12}
 .setRow{display:grid;gap:8px;justify-items:center}
 .setLbl{font-family:var(--f-crt);font-size:18px;letter-spacing:.16em;color:var(--dim)}
+#bindList{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 8px;align-items:center;width:min(440px,90vw)}
+#bindList .bName{font-family:var(--f-crt);font-size:17px;letter-spacing:.12em;color:var(--bone);text-align:left}
+#bindList button{font:15px var(--f-crt);letter-spacing:.08em;padding:7px 6px;min-height:36px;background:#141a1b;color:#e8e0c8;border:1px solid #4a5a55;cursor:pointer}
+#bindList button.empty{color:#6f7a76}#bindList button.wait{border-color:#e0b860;color:#e0b860;animation:dnb .8s steps(2) infinite}
+#settings .ovCol{max-height:100%;overflow:auto}
 .diffBtn{font-family:var(--f-stencil);font-weight:800;font-size:20px;letter-spacing:.1em;padding:8px 14px;border:1px solid rgba(232,223,201,.25)}
 .diffBtn.on{color:var(--ink);background:var(--mustard);border-color:var(--mustard)}
 #sens{width:min(320px,70vw);accent-color:var(--mustard)}
@@ -282,7 +287,10 @@ button:focus-visible{outline:2px solid var(--crt);outline-offset:3px}
 #lobLink{word-break:break-all;margin:6px 0 10px}
 .teamPanel .lobRow{background:none;padding:11px 0;border-bottom:1px solid #334843;font:16px monospace;gap:10px}.teamPanel .lobRow small{font:11px monospace;color:#b6bf8e;letter-spacing:.1em}.teamPanel .lobRow small.nr{color:#8a8f86}
 #lobDiff{margin-top:12px;flex-wrap:wrap;gap:8px}
-#lobStatus{font:13px/1.6 monospace;color:#c0b17d;min-height:20px;margin:16px 0 0}#lobStatus.err{color:#ff8a7a}
+#lobStatus,#acctStatus{font:13px/1.6 monospace;color:#c0b17d;min-height:20px;margin:16px 0 0}#lobStatus.err,#acctStatus.err{color:#ff8a7a}
+#acct{z-index:80;background:linear-gradient(110deg,rgba(5,13,15,.98),rgba(4,11,13,.88)),url('factory-keyart.jpg') center/cover,#060708;overflow:auto;align-items:center;justify-content:center;padding:25px}
+#acct .joinRow .mbtn{flex:1;width:auto;font-size:17px;white-space:nowrap}#acctIn .joinRow .mbtn{flex:0 0 110px}
+#acctStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:16px 0 4px}#acctStats div{border:1px solid #334843;padding:10px;text-align:center}#acctStats b{display:block;font:24px monospace;color:#e1c88a}#acctStats span{font:10px monospace;letter-spacing:.12em;color:#9aa6a0}
 #party{background:#0c191bdc;border:1px solid #51645b;padding:6px 10px;font:12px monospace;letter-spacing:.04em;color:#d6cfad;text-shadow:none}
 #party .crewHd{justify-content:flex-start;color:#b99b60;letter-spacing:.14em;font-size:11px;border-bottom:1px solid #334843;padding-bottom:3px;margin-bottom:2px}
 #party b.dn{color:#ff6a5a;font-weight:700;animation:dnb .8s steps(2) infinite}@keyframes dnb{50%{opacity:.35}}
@@ -371,6 +379,7 @@ button:focus-visible{outline:2px solid var(--crt);outline-offset:3px}
         <button class="mbtn" id="mRoamCont" hidden>CONTINUE SOLO<small>FROM YOUR LAST CHECKPOINT</small></button>
         <button class="mbtn" id="mNew">NIGHT SHIFT<small>GUARD THE OFFICE · NIGHT 1</small></button>
         <button class="mbtn" id="mCont">CONTINUE NIGHT SHIFT<small id="mContSub">NIGHT 1</small></button>
+        <button class="mbtn" id="mAcct">ACCOUNT<small>GUEST · SIGN IN TO SAVE YOUR STATS</small></button>
         <button class="mbtn" id="mSet">SETTINGS<small>DIFFICULTY · LOOK SPEED</small></button>
         <button class="mbtn" id="mSix">NIGHT 6<small id="mSixSub">LOCKED: SURVIVE NIGHT 5</small></button>
       </div>
@@ -421,8 +430,25 @@ button:focus-visible{outline:2px solid var(--crt);outline-offset:3px}
     <div class="setRow"><label class="setLbl" for="graphics">GRAPHICS</label>
       <select id="graphics"><option value="cinematic">Cinematic · reflections and shadows</option><option value="balanced">Balanced · reflections</option><option value="low">Low · lighter effects</option></select>
     </div>
+    <div class="setRow" id="bindRow"><div class="setLbl">PC CONTROLS</div>
+      <div class="fine">Tap a slot, then press a key or mouse button. BACKSPACE clears it, ESC cancels.</div>
+      <div id="bindList"></div><button class="diffBtn" id="bindReset">RESET TO DEFAULTS</button></div>
     <button class="mbtn" id="setClose">DONE</button></div></div>
   <div id="mpDown" hidden><div id="mpDownMsg">CAUGHT</div><div id="mpDownSub"></div></div>
+  <div id="acct" class="screen" hidden><div class="teamPanel">
+    <div class="eyebrow">STITCHWORKS / PERSONNEL FILE</div><h1>YOUR GUARD FILE.</h1>
+    <div id="acctOut"><p class="teamCopy">Sign in to keep your callsign and stats on every device. Playing as a guest works too, nothing is saved.</p>
+      <button class="mbtn" id="acctGoogle">SIGN IN WITH GOOGLE</button>
+      <label for="acctEmail">EMAIL</label><input id="acctEmail" type="email" autocomplete="email" placeholder="you@example.com">
+      <label for="acctPass">PASSWORD</label><input id="acctPass" type="password" autocomplete="current-password" placeholder="At least 6 characters">
+      <div class="joinRow"><button class="mbtn" id="acctSignIn">SIGN IN</button><button class="mbtn" id="acctCreate">CREATE ACCOUNT</button></div>
+      <button class="mbtn" id="acctForgot" style="background:transparent">FORGOT PASSWORD</button></div>
+    <div id="acctIn" hidden><p class="teamCopy">Signed in as <b id="acctWho"></b></p>
+      <label for="acctName">CALLSIGN</label><div class="joinRow"><input id="acctName" maxlength="18" autocomplete="nickname"><button class="mbtn" id="acctSave">SAVE</button></div>
+      <div id="acctStats"></div><button class="mbtn" id="acctOutBtn" style="background:transparent">SIGN OUT</button></div>
+    <p id="acctStatus" role="status"></p>
+    <button class="mbtn" id="acctBack">BACK TO MENU</button>
+  </div></div>
   <div id="lobby" class="screen" hidden><div class="teamPanel">
     <div class="eyebrow">STITCHWORKS / EXPEDITION CONTROL</div><h1>DON’T GO ALONE.</h1>
     <p class="teamCopy">Up to five guards. One factory. Find the clues together, restore the gate, and bring everyone home.</p>
@@ -1631,6 +1657,11 @@ showA.add(jackBoxG);
 const mini=buildZippa();mini.root.scale.setScalar(.13);mini.root.position.set(-.95,.86,-1.85);mini.root.rotation.y=.5;office.add(mini.root);
 mini.P.arms[0].root.rotation.x=-1.1;mini.P.arms[1].root.rotation.x=-.4;mini.P.head.rotation.z=.25;dyn.mini=mini;
 
+// ---------- PC mouse: no browser context menu ("Save image as…") on right-click, no image dragging, no middle-click autoscroll ----------
+const typing=t=>t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+addEventListener('contextmenu',e=>{if(!typing(e.target))e.preventDefault()},{capture:true});
+addEventListener('dragstart',e=>{if(!typing(e.target))e.preventDefault()},{capture:true});
+addEventListener('mousedown',e=>{if(e.button===1&&!typing(e.target))e.preventDefault()},{capture:true});
 // ---------- filmed jump scare for Zippa (falls back to the in-engine lunge if the clip can't play) ----------
 const ZVID=$('#zScareVid');
 function zVidUnlock(){if(zVidUnlock.done)return;zVidUnlock.done=1;try{ZVID.muted=true;const p=ZVID.play();if(p)p.then(()=>{ZVID.pause();ZVID.currentTime=0;ZVID.muted=false}).catch(()=>{ZVID.muted=false})}catch(e){}}
@@ -1899,17 +1930,17 @@ addEventListener('keydown',e=>{if(e.repeat)return;keys[e.code]=true;A.init();if(
   if(c==='KeyQ')toggleDoor('L');else if(c==='KeyE')toggleDoor('R');else if(c==='KeyZ')toggleLight('L');else if(c==='KeyC')toggleLight('R');else if(c==='KeyW')toggleVent();else if(c==='KeyS')toggleLight('V');
   else if(c==='Space'){e.preventDefault();setCams(!G.camUp)}else if(c==='Escape'||c==='KeyP')pauseGame(!G.paused);else if(/^Digit[1-8]$/.test(c)){if(!G.camUp)setCams(true);switchCam(+c.slice(5)-1)}else if(c==='KeyF'&&G.camUp&&G.cam===4){G.winding=true;ui.windBtn.classList.add('held')}}
   else if(G.state==='intro'&&(e.code==='Space'||e.code==='Enter')){if(G.mode==='roam')startRoam(G.roamCP);else beginNight()}
-  else if(G.state==='roam'){const c=e.code;if(c==='KeyE')useT();else if(c==='KeyF')toggleFlash();else if(c==='KeyC'||c==='ControlLeft')toggleCrouch();else if(c==='KeyG')throwToy();else if(c==='KeyM')openMap();else if(c==='KeyJ'||c==='Tab'){e.preventDefault();openJournal()}else if(c==='Space'){e.preventDefault();if(PL.hidden&&!PL.gaspLock)PL.holding=true}else if(c==='Escape'||c==='KeyP')pauseGame(true)}
+  else if(G.state==='roam'){const c=e.code;const act=bindOf(c);if(act){e.preventDefault();doBind(act)}else if(c==='KeyG')throwToy();else if(c==='KeyM')openMap();else if(c==='KeyJ'||c==='Tab'){e.preventDefault();openJournal()}else if(c==='Space'){e.preventDefault();if(PL.hidden&&!PL.gaspLock)PL.holding=true}else if(c==='Escape'||c==='KeyP')pauseGame(true)}
   else if(G.state==='reading'&&(c2=>c2==='Escape'||c2==='KeyE'||c2==='KeyJ'||c2==='KeyM'||c2==='Enter')(e.code))closeOverlays();});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space'&&typeof PL!=='undefined')PL.holding=false;if(e.code==='KeyF'){G.winding=false;ui.windBtn.classList.remove('held')}});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&!MP.on&&(G.state==='play'||G.state==='roam'))pauseGame(true)});
 
-function pauseGame(p){if(p&&(G.state==='play'||G.state==='roam')){G.prev=G.state;G.state='paused';show(ui.pause,true);A.master(.0001);if(G.mode==='roam')exitLock();$('#pauseHelp').textContent=MP.on?'Your crew is still moving. The factory does not pause in team play.':G.mode==='roam'?PAUSE_ROAM:PAUSE_NIGHT}else if(!p&&G.state==='paused'){G.state=G.prev||'play';show(ui.pause,false);A.master(.9);last=performance.now()}}
+function pauseGame(p){if(p&&(G.state==='play'||G.state==='roam')){G.prev=G.state;G.state='paused';show(ui.pause,true);A.master(.0001);if(G.mode==='roam')exitLock();$('#pauseHelp').textContent=MP.on?'Your crew is still moving. The factory does not pause in team play.':G.mode==='roam'?PAUSE_ROAM.replace('{PCKEYS}',pcKeys()):PAUSE_NIGHT}else if(!p&&G.state==='paused'){G.state=G.prev||'play';show(ui.pause,false);A.master(.9);last=performance.now()}}
 const PAUSE_NIGHT='Controls: drag or A/D to look · Q/E doors · Z/C door lights · W seal vent · S vent light · SPACE cameras · 1–8 switch cameras · hold F to wind.';
-const PAUSE_ROAM='Phone: left thumb moves (push to the edge to run), right thumb looks. PC: click to look · WASD move · SHIFT run · C crouch · E use · F flashlight · G throw toy · hold SPACE to hold your breath · J journal · M map.';
+const PAUSE_ROAM='Phone: left thumb moves (push to the edge to run), right thumb looks. PC: {PCKEYS}';
 
 // ---------------- flow ----------------
-function hideAll(){[ui.menu,ui.intro,ui.over,ui.win,ui.pause,ui.hud,ui.tablet,ui.camBar,$('#rhud'),$('#rtouch'),$('#reader'),$('#journal'),$('#rEnd'),$('#mapScr'),$('#keypad'),$('#lobby'),$('#mpDown')].forEach(e=>show(e,false))}
+function hideAll(){[ui.menu,ui.intro,ui.over,ui.win,ui.pause,ui.hud,ui.tablet,ui.camBar,$('#rhud'),$('#rtouch'),$('#reader'),$('#journal'),$('#rEnd'),$('#mapScr'),$('#keypad'),$('#lobby'),$('#acct'),$('#mpDown')].forEach(e=>show(e,false))}
 function toMenu(){if(MP.room)leaveRoom();hideAll();G.state='menu';G.mode='night';try{if(document.pointerLockElement)document.exitPointerLock()}catch(e){}{let has=false;try{has=!!localStorage.getItem('stitchworks.roam2')}catch(e){}$('#mRoamCont').hidden=!has}show(ui.menu,true);A.music(0);A.static(0);A.buzz(0);A.dread(0);A.fan(0);A.ambient(.5);A.mbox.on=false;
   $('#mContSub').textContent='NIGHT '+Math.min(unlocked,5);$('#mCont').disabled=unlocked<2;
   $('#mSix').disabled=unlocked<6;$('#mSixSub').textContent=unlocked>=6?'THEY ALL WANT A HUG':'LOCKED: SURVIVE NIGHT 5';
@@ -2026,6 +2057,7 @@ function winNight(){G.state='win';G.camUp=false;hideAll();A.mbox.on=false;A.musi
 }
 function gameOver(who){G.state='over';hideAll();A.mbox.on=false;A.music(0);A.dread(0);A.buzz(0);A.fan(0);A.ambient(.2);A.static(.9);setTimeout(()=>G.state==='over'&&A.static(.25),900);
   const name={zippa:'ZIPPA',prima:'PRIMA',jack:'SPRINGJAW'}[who];
+  if(G.mode==='roam'&&!MP.on)accStat({caught:1});
   if(G.mode==='roam'){const hint={zippa:'He sees your flashlight from far away. Break line of sight, then hide. If he stops by your hiding spot, hold your breath, and never let him watch you climb in.',prima:'Prima only moves while nobody is watching her. Keep her on screen and back away, or wind the music box in the nursery to put her back to sleep.',jack:'When bells ring inside a wall, Springjaw is about to burst out of the nearest vent grate. Get away from it.'}[who];
     ui.overText.innerHTML=`<b style="color:var(--bone)">${name}</b> got you in the ${(ROOMNAME[zoneOf(...toCell(PL.x,PL.z))]||'dark').toLowerCase()}.<br><br>${hint}`;$('#oRetry').textContent='RETRY FROM CHECKPOINT';show(ui.over,true);drawStatic();return}
   $('#oRetry').textContent='RETRY NIGHT';
@@ -2231,6 +2263,16 @@ const rc=(k,fx=.5,fy=.5)=>{const [x0,y0,x1,y1]=ROOMS[k].r;return[Math.round(x0+(
 
 // ---------- settings ----------
 const SET={diff:'normal',sens:1,graphics:isTouch?'balanced':'cinematic'};try{Object.assign(SET,JSON.parse(localStorage.getItem('stitchworks.settings')||'{}'))}catch(e){}
+// ---------- rebindable PC controls (keyboard keys or mouse buttons, two slots each) ----------
+const BIND_DEF={use:['KeyE','Mouse0'],light:['KeyF','Mouse2'],crouch:['KeyC','ControlLeft']};
+const BIND_NAME={use:'USE',light:'LIGHT',crouch:'CROUCH'};
+function bindsOk(b){return b&&typeof b==='object'&&Object.keys(BIND_DEF).every(k=>Array.isArray(b[k])&&b[k].length===2)}
+if(!bindsOk(SET.binds))SET.binds=JSON.parse(JSON.stringify(BIND_DEF));
+function bindOf(code){for(const k in SET.binds)if(SET.binds[k].includes(code))return k;return null}
+function doBind(act){if(G.state!=='roam')return;if(act==='use')useT();else if(act==='light')toggleFlash();else if(act==='crouch')toggleCrouch()}
+function keyLabel(c){if(!c)return '—';const M={Mouse0:'LEFT CLICK',Mouse1:'MIDDLE CLICK',Mouse2:'RIGHT CLICK',Mouse3:'MOUSE 4',Mouse4:'MOUSE 5',Space:'SPACE',ControlLeft:'L-CTRL',ControlRight:'R-CTRL',ShiftLeft:'L-SHIFT',ShiftRight:'R-SHIFT',AltLeft:'L-ALT',AltRight:'R-ALT',Tab:'TAB',Enter:'ENTER',CapsLock:'CAPS',Backquote:'`',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→'};
+  if(M[c])return M[c];if(/^Mouse\d$/.test(c))return 'MOUSE '+(+c.slice(5)+1);if(/^Key[A-Z]$/.test(c))return c.slice(3);if(/^Digit\d$/.test(c))return c.slice(5);if(/^Numpad/.test(c))return 'NUM '+c.slice(6);return c.replace(/([a-z])([A-Z])/g,'$1 $2').toUpperCase()}
+function pcKeys(){const b=k=>SET.binds[k].filter(Boolean).map(keyLabel).join('/')||'unbound';return `click to look · WASD move · SHIFT run · ${b('crouch')} crouch · ${b('use')} use · ${b('light')} flashlight · G throw · hold SPACE to hold breath · J journal · M map.`}
 const DIFF={easy:{zs:3.2,zr:.8,bat:.4,ps:2.7,jt:1.4,label:'EASY'},normal:{zs:3.75,zr:1,bat:.6,ps:3.4,jt:1,label:'NORMAL'},nightmare:{zs:4.25,zr:1.3,bat:.8,ps:4.0,jt:.7,label:'NIGHTMARE'}};
 const D=()=>DIFF[SET.diff]||DIFF.normal;
 
@@ -2411,7 +2453,7 @@ const EV={heads:[],mirror:null,mirrorSurface:null,maskHead:null,statue:null,phon
   rChest(25,9,'w');lamp(31,4,0xffa3b8,1.3,.2);lamp(28,7,0xffb27a,.7,.6);lamp(35,8,0xffb27a,.7,.6);rItem('bat3','battery',36,8,.4,.4,.05,'TAKE BATTERY');rItem('d2','doll',26,2,0,.95,.85,'TAKE STITCH DOLL',{n:2});
   rPoster(decal(T.hand),2,2,38,5,'e',1.3);debris(25,3,38,9,40);
   // ---------------- PAINT SHOP ----------------
-  for(let i=0;i<3;i++){const [x,z]=at(42+i*3,2);const g=grp(x,z+.2);[-1,1].forEach(s=>{bx(g,.06,2.4,.06,M.darkMetal,s*.9,1.2,-.6);bx(g,.06,2.4,.06,M.darkMetal,s*.9,1.2,.6)});bx(g,1.9,.06,1.3,M.darkMetal,0,2.4,0);add(g,new THREE.Mesh(new THREE.PlaneGeometry(1.8,2.3),std({color:0xa0b8a0,transparent:true,opacity:.35,side:THREE.DoubleSide,roughness:.3,depthWrite:false})),0,1.2,.62);head(x,1.1,z+.2,1.6,[M.fur,M.patchA,M.patchB][i]);cyl(g,.03,.03,1,M.darkMetal,0,.5,0,6);aabb(x,z+.2,1.9,1.3)}
+  for(let i=0;i<3;i++){const [x,z]=at(42+i*3,2);const g=grp(x,z+.2);[-1,1].forEach(s=>{bx(g,.06,2.4,.06,M.darkMetal,s*.9,1.2,-.6);bx(g,.06,2.4,.06,M.darkMetal,s*.9,1.2,.6)});bx(g,1.9,.06,1.3,M.darkMetal,0,2.4,0);bx(g,1.8,2.34,.03,pm(0x55605a,{roughness:.8}),0,1.2,-.6);{const gl=std({color:0x8fa898,transparent:true,opacity:.22,side:THREE.DoubleSide,roughness:.65,depthWrite:false});[-1,1].forEach(s=>add(g,new THREE.Mesh(new THREE.PlaneGeometry(1.14,2.3),gl),s*.9,1.2,0,0,PI/2,0))}bx(g,1.86,.08,.08,M.darkMetal,0,.04,.6);bx(g,1.86,.08,.08,M.darkMetal,0,.04,-.6);head(x,1.1,z+.2,1.6,[M.fur,M.patchA,M.patchB][i]);cyl(g,.03,.03,1,M.darkMetal,0,.5,0,6);aabb(x,z+.2,1.9,1.3)}
   for(let r=0;r<2;r++){const [x,z]=at(43+r*4,6);const g=grp(x,z);for(let k=0;k<4;k++){bx(g,1.8,.03,.4,M.darkMetal,0,.3+k*.45,0);for(let i=0;i<4;i++)head(x-.6+i*.4,.42+k*.45,z,.75,[M.fur,M.patchA,M.patchB,M.patchC][(i+k)%4])}[-1,1].forEach(s=>bx(g,.04,1.8,.4,M.darkMetal,s*.9,.9,0));aabb(x,z,1.9,.5)}
   for(let i=0;i<14;i++){const [x,z]=at(41+(i%8),8+(i>7?1:0));const c=[0xb8402e,0xd6a63a,0x3f8a5a,0x7a4aa0,0x2f78b0][i%5];cyl(roamA,.13,.13,.3,pm(c,{metalness:.3,roughness:.5}),x+(rnd()-.5)*.6,.15,z+(rnd()-.5)*.4,10);if(i%4===0)cyl(roamA,.25,.25,.005,pm(c,{roughness:.1}),x+.3,.003,z+.3,16)}
   {const p=wallPos(46,9,'s');const tg=add(roamA,plane(.22,.28,M.tag[1]),p.x,1.2,p.z-.01,0,p.ry,.1);addInteract({id:'tag2',type:'tag',n:1,x:p.x,z:p.z-.8,y:1.2,label:'READ TAG'})}
@@ -2434,27 +2476,27 @@ const EV={heads:[],mirror:null,mirrorSurface:null,maskHead:null,statue:null,phon
   for(let i=0;i<2;i++){const [x,z]=at(15+i*3,14);shelfUnit(x+.5,z-.85,0,2.6,4,.8);aabb(x+.5,z-.85,2.7,.65)}
   rItem('fuse3','fuse',18,14,.5,-.85,.86,'TAKE FUSE');rLocker(19,18,'e');rLocker(19,19,'e');crateStack(...at(14,19,.2,.2),3);rItem('j5','note',16,18,0,0,.02,'READ NOTE');rItem('bat2','battery',18,17,0,0,.05,'TAKE BATTERY');lamp(17,16,0xe0d0b0,.7,.5);debris(14,14,19,19,15);
   // ---------------- RESTROOMS ----------------
-  for(let i=0;i<4;i++){
-    const [x,z]=at(15+i,22);
-    const g=grp(x,z);
-    bx(g,.04,1.85,1.94,props.paint,-1.22,1.055,.05);
-    if(i===3)bx(g,.04,1.85,1.94,props.paint,1.22,1.055,.05);
-    const door=add(g,new THREE.Group(),-.62,1.07,1.08,0,(i===1||i===3)?1.07:.12,0);
-    bx(door,1.24,1.62,.045,props.paint,.62,0,0);
-    bx(door,.15,.032,.035,props.chrome,1.08,-.1,.036);
-    for(const height of [-.57,.57])bx(door,.055,.12,.053,props.chrome,.032,height,0);
-    props.toilet(g,0,0,-.53);
-    cyl(g,.07,.07,.127,props.chrome,-1.22,.063,.9,10);
-    OBS.push({x0:x-1.25,x1:x+1.25,z0:z-1.25,z1:z+.9});
-  }
+  // four stalls along the north wall: full-depth partitions from wall to front, pilasters and a header rail so nothing floats
+  {const [x0,z0]=at(15,22);const zb=z0-CS/2,zf=z0+1.08,len=zf-zb,zc=(zb+zf)/2;
+   for(let k=0;k<=4;k++){const px=k===0?x0-1.22:k===4?x0+8.72:x0-1.25+k*2.5;bx(roamA,.04,1.85,len,props.paint,px,1.055,zc);cyl(roamA,.035,.035,.13,props.chrome,px,.065,zf-.04,10)}
+   bx(roamA,10,.05,.06,props.chrome,x0+3.75,1.99,zf);
+   for(let i=0;i<4;i++){const [x,z]=at(15+i,22);const g=grp(x,z);
+     bx(g,.58,1.85,.04,props.paint,-.92,1.055,1.08);bx(g,.58,1.85,.04,props.paint,.92,1.055,1.08);
+     const door=add(g,new THREE.Group(),-.62,1.07,1.08,0,(i===1||i===3)?1.07:.12,0);
+     bx(door,1.24,1.62,.045,props.paint,.62,0,0);
+     bx(door,.15,.032,.035,props.chrome,1.08,-.1,.036);
+     for(const height of [-.57,.57])bx(door,.055,.12,.053,props.chrome,.032,height,0);
+     props.toilet(g,0,0,-.53);
+     OBS.push({x0:x-1.25,x1:x+1.25,z0:z-1.25,z1:z+1.12})}}
+  // sinks and the long mirror sit on the solid stretch of the south wall (the doorway at column 16 stays clear)
   for(let i=0;i<3;i++){
-    const [x,z]=at(15+i*2,27);
+    const [x,z]=at(17+i,27);
     const g=grp(x,z+.87,PI);
     props.sink(g,0,0,0);
     aabb(x,z+.9,.65,.62);
   }
   {
-    const [x,z]=at(17,27);
+    const [x,z]=at(18,27);
     const frame=grp(x,z+1.229,PI);
     bx(frame,5.06,1.16,.028,props.chrome,0,1.65,0);
     EV.mirrorSurface=keep(add(roamA,plane(5,1.1,M.mirror),x,1.65,z+1.208,0,PI,0));
@@ -2484,13 +2526,13 @@ const EV={heads:[],mirror:null,mirrorSurface:null,maskHead:null,statue:null,phon
   // ---------------- GENERATOR ROOM ----------------
   for(let i=0;i<2;i++){const [x,z]=at(49+i*2.5,24);props.generator(grp(x,z));aabb(x,z,2.2,1.8)}
   {const p=wallPos(45,24,'w');const g=grp(p.x+.08,p.z,p.ry);bx(g,.6,.8,.14,M.darkMetal,0,1.35,0);bx(g,.62,.12,.16,pm(0x9a7a1a),0,1.81,0);const slots=[];for(let i=0;i<3;i++){cyl(g,.05,.05,.06,M.black,-.18+i*.18,1.3,.08,10,PI/2);const f=keep(cyl(g,.035,.035,.08,M.fuseOn,-.18+i*.18,1.3,.1,10,PI/2));f.visible=false;slots.push(f)}add(g,plane(.5,.12,std({map:signTex('FUSES · GATE CIRCUIT','#1b1b16','#d9a43a'),roughness:.8})),0,1.62,.075);dyn.fuseSlots=slots;addInteract({id:'fusebox',type:'fusebox',x:p.x+.75,z:p.z,y:1.3,label:'FUSE BOX',repeat:true})}
-  {const [x,z]=at(46,27);bx(roamA,1.6,.06,.7,M.desk,x,.8,z+.65);bx(roamA,1.5,.75,.05,M.desk,x,.4,z+.95);aabb(x,z+.65,1.6,.75)}rItem('j6','note',46,27,.2,.6,.84,'READ NOTE');lamp(47,25,0xff6a50,.9,.4);lamp(51,27,0xff6a50,.6,.6);debris(45,23,52,27,15);
+  {const [x,z]=at(46,27);bx(roamA,1.6,.06,.7,M.desk,x,.8,z+.65);bx(roamA,1.5,.75,.05,M.desk,x,.4,z+.95);[-1,1].forEach(s=>bx(roamA,.05,.77,.66,M.desk,x+s*.76,.385,z+.65));aabb(x,z+.65,1.6,.75)}rItem('j6','note',46,27,.2,.6,.84,'READ NOTE');lamp(47,25,0xff6a50,.9,.4);lamp(51,27,0xff6a50,.6,.6);debris(45,23,52,27,15);
   // ---------------- ARCHIVE (keypad) ----------------
   for(let i=0;i<5;i++){const [x,z]=at(57,15+i*2.5);for(let k=0;k<2;k++){bx(roamA,.6,1.4,.6,pm(0x4a4f4c,{metalness:.5,roughness:.5}),x-.9+k*1.8,.7,z);for(let d=0;d<3;d++)bx(roamA,.5,.03,.02,M.metal,x-.9+k*1.8,.3+d*.45,z+.31)}aabb(x,z,2.4,.62)}
   {const [x,z]=at(57,26);table(x,z,1.6,.8,M.desk);}rItem('bkey','key',57,26,.2,0,.84,'TAKE BRASS KEY');rItem('j10','note',57,26,-.4,.1,.84,'READ NOTE');lamp(57,20,0xffe0b0,.6,.4);lamp(57,25,0xffe0b0,.8,.3);debris(56,14,58,27,30);
   {const d=DOORS.K.mesh.position;const [kx,kz]=at(54,18);keep(bx(roamA,.05,.32,.24,M.darkPlastic,kx+1.2,1.3,kz-.85));dyn.kpLed=keep(bx(roamA,.06,.04,.04,M.gateRed.clone(),kx+1.17,1.47,kz-.85)).material;addInteract({id:'keypad',type:'keypad',x:kx+.3,z:kz,y:1.3,label:'KEYPAD',repeat:true,reach:2.0})}
   // ---------------- BOILER ROOM ----------------
-  for(let i=0;i<3;i++){const [x,z]=at(3+i*3,34);cyl(roamA,.9,.9,2.6,pm(0x4a3a30,{metalness:.6,roughness:.5}),x,1.3,z,18);cyl(roamA,.95,.95,.1,M.darkMetal,x,2.6,z,18);cyl(roamA,.2,.2,1,M.metal,x,3,z,8);const dial=cyl(roamA,.14,.14,.04,pm(0xd8d0c0),x,1.6,z+.9,16,PI/2);bx(roamA,.25,.25,.05,M.redLamp,x+.4,2,z+.9);OBS.push({x,z,r:1.0})}
+  for(let i=0;i<3;i++){const [x,z]=at(3+i*3,34);bx(roamA,2.1,.12,2.1,pm(0x5a5650,{roughness:.95}),x,.06,z);cyl(roamA,.9,.9,2.5,pm(0x4a3a30,{metalness:.6,roughness:.5}),x,1.37,z,18);cyl(roamA,.95,.95,.1,M.darkMetal,x,2.62,z,18);cyl(roamA,.96,.96,.08,M.darkMetal,x,.16,z,18);cyl(roamA,.2,.2,.6,M.metal,x,2.95,z,8);const dial=cyl(roamA,.14,.14,.04,pm(0xd8d0c0),x,1.6,z+.9,16,PI/2);bx(roamA,.25,.25,.05,M.redLamp,x+.4,2,z+.9);OBS.push({x,z,r:1.0})}
   for(let i=0;i<5;i++){const [x,z]=at(1,36.5);cyl(roamA,.09,.09,CS*10,pm(0x5a3a2a,{metalness:.6}),x-1.0,.5+i*.45,z,8,PI/2)}
   {const [x,z]=at(3,41);const v=grp(x,z+1.0);add(v,new THREE.Mesh(new THREE.TorusGeometry(.22,.03,6,18),pm(0x9c1a1f)),0,1.2,0);cyl(v,.06,.06,.6,M.metal,0,.9,0,8);add(roamA,plane(.22,.28,M.tag[3]),x+.4,1.25,z+1.22,0,PI,.1);addInteract({id:'tag4',type:'tag',n:3,x:x+.4,z:z+.3,y:1.2,label:'READ TAG'})}
   lamp(5,36,0xff5030,.9,.3);lamp(8,40,0xff5030,.6,.6);rItem('d9','doll',9,33,.4,-.3,.05,'TAKE STITCH DOLL',{n:9});rItem('toy5','toy',6,40,0,0,.05,'TAKE WIND-UP TOY');rItem('bat6','battery',1,38,.3,0,.05,'TAKE BATTERY');rLocker(10,38,'e');debris(1,32,10,41,25);
@@ -2527,6 +2569,25 @@ const EV={heads:[],mirror:null,mirrorSurface:null,maskHead:null,statue:null,phon
   OBS.forEach(o=>{if(o.r){const [cx,cy]=toCell(o.x,o.z);if(o.r>.8)MBLOCK.add(cy*RW+cx);return}for(let y=0;y<RH;y++)for(let x=0;x<RW;x++){const [wx,wz]=cw(x,y);if(wx>o.x0&&wx<o.x1&&wz>o.z0&&wz<o.z1)MBLOCK.add(y*RW+x)}});
 })();
 
+// ---------- debug: ?audit lists props that hang over openings, block doorways or sink into walls ----------
+if(/[?&]audit/.test(location.search)){roamA.updateMatrixWorld(true);const out=[],bb=new THREE.Box3(),solid=(cx,cy)=>{const c=gc(cx,cy);return c==='#'};
+  const doorish=(cx,cy)=>{const c=gc(cx,cy);return c==='d'||!!LOCK[c]};
+  roamA.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.position||o.geometry.attributes.position.count>6000)return;bb.setFromObject(o);const s=bb.getSize(new V3());if(s.x>9||s.z>9||s.y>4)return;
+    const room=(()=>{const [cx,cy]=toCell((bb.min.x+bb.max.x)/2,(bb.min.z+bb.max.z)/2);for(const k in ROOMS){const r=ROOMS[k].r;if(cx>=r[0]&&cx<=r[2]&&cy>=r[1]&&cy<=r[3])return ROOMS[k].n}return 'corridor'})();
+    const tag={room,min:bb.min.toArray().map(v=>+v.toFixed(2)),max:bb.max.toArray().map(v=>+v.toFixed(2)),col:o.material&&o.material.color?o.material.color.getHexString():''};
+    // flat things hung on a wall: every sample along their width needs solid wall behind them
+    const thinX=s.x<.14&&s.z>.3,thinZ=s.z<.14&&s.x>.3;
+    if((thinX||thinZ)&&bb.min.y>.3){const along=thinX?'z':'x',across=thinX?'x':'z';const mid=(bb.min[across]+bb.max[across])/2;
+      for(const sgn of [-1,1]){const probe=mid+sgn*.3;let open=0,n=0;for(let t=.05;t<=.95;t+=.1){const a=bb.min[along]+(bb.max[along]-bb.min[along])*t;const [cx,cy]=along==='x'?toCell(a,probe):toCell(probe,a);n++;if(!solid(cx,cy))open++}
+        const [ox,oy]=along==='x'?toCell(mid,mid+sgn*.3):toCell(mid+sgn*.3,mid);
+        const nearWall=(()=>{for(let t=.05;t<=.95;t+=.1){const a=bb.min[along]+(bb.max[along]-bb.min[along])*t;const [cx,cy]=along==='x'?toCell(a,probe):toCell(probe,a);if(solid(cx,cy))return true}return false})();
+        if(nearWall&&open>0)out.push({k:'wall-hung item partly over an opening',open:open+'/'+n,...tag})}}
+    // anything below head height inside a doorway cell
+    if(bb.min.y<1.6){for(let x=bb.min.x+.05;x<bb.max.x;x+=.25)for(let z=bb.min.z+.05;z<bb.max.z;z+=.25){const [cx,cy]=toCell(x,z);if(doorish(cx,cy)){out.push({k:'blocks a doorway',cell:[cx,cy],...tag});return}}}
+    // sunk deep into a wall
+    let inWall=0,tot=0;for(let x=bb.min.x;x<=bb.max.x;x+=.2)for(let z=bb.min.z;z<=bb.max.z;z+=.2){tot++;const [cx,cy]=toCell(x,z);if(solid(cx,cy))inWall++}
+    if(tot>4&&inWall/tot>.5)out.push({k:'mostly inside a wall',frac:(inWall/tot).toFixed(2),...tag});
+  });window.__AUDIT=out}
 // ---------- bake static props into a few chunked meshes ----------
 (function mergeStatic(root){root.updateMatrixWorld(true);const buckets=new Map(),drop=[];const nm=new THREE.Matrix3(),v=new V3();
   root.traverse(o=>{if(!o.isMesh)return;let p=o,k=false;while(p&&p!==root){if(p.userData.keep){k=true;break}p=p.parent}if(k)return;if(o.material.transparent||Array.isArray(o.material))return;
@@ -2722,6 +2783,9 @@ rui.touch.addEventListener('pointerdown',e=>{A.init();if(G.state!=='roam')return
 rui.touch.addEventListener('pointermove',e=>{if(G.state!=='roam')return;if(e.pointerId===joy.id){let dx=e.clientX-joy.ox,dy=e.clientY-joy.oy;const m=Math.hypot(dx,dy),R_=56;if(m>R_){dx*=R_/m;dy*=R_/m}joy.x=dx/R_;joy.y=dy/R_;rui.knob.style.transform=`translate(${dx}px,${dy}px)`;return}
   const l=looks.get(e.pointerId);if(!l||document.pointerLockElement)return;const dx=e.clientX-l.x,dy=e.clientY-l.y;l.x=e.clientX;l.y=e.clientY;const s=(e.pointerType==='mouse'?.004:.0065)*SET.sens;PL.yaw-=dx*s;PL.pitch-=dy*s});
 ['pointerup','pointercancel'].forEach(ev=>rui.touch.addEventListener(ev,e=>{if(e.pointerId===joy.id)joyRelease();looks.delete(e.pointerId)}));
+// mouse-button bindings: any button while the mouse is captured; the first left click only captures the mouse
+document.addEventListener('mousedown',e=>{if(G.state!=='roam'||bindWait)return;const act=bindOf('Mouse'+e.button);if(!act)return;if(e.button===0&&!document.pointerLockElement)return;e.preventDefault();doBind(act)},{capture:true});
+['mouseup','auxclick'].forEach(ev=>document.addEventListener(ev,e=>{if((G.state==='roam'||G.state==='paused')&&e.button>=3)e.preventDefault()},{capture:true}));
 document.addEventListener('mousemove',e=>{if(G.state==='roam'&&document.pointerLockElement){PL.yaw-=e.movementX*.0022*SET.sens;PL.pitch-=e.movementY*.0022*SET.sens}});
 document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement)PL.wasLocked=true;else if(PL.wasLocked&&G.state==='roam'){PL.wasLocked=false;pauseGame(true)}});
 
@@ -2730,7 +2794,17 @@ function syncSettings(){document.querySelectorAll('.diffBtn').forEach(b=>b.class
 document.querySelectorAll('.diffBtn').forEach(b=>b.addEventListener('click',()=>{SET.diff=b.dataset.d;syncSettings()}));
 $('#sens').addEventListener('input',e=>{SET.sens=parseFloat(e.target.value)||1;syncSettings()});
 $('#graphics').addEventListener('change',e=>{SET.graphics=e.target.value;syncSettings()});
-function openSettings(back){G.setBack=back;show($('#settings'),true);syncSettings()}
+function openSettings(back){G.setBack=back;show($('#settings'),true);syncSettings();renderBinds()}
+let bindWait=null;
+function renderBinds(){const el=$('#bindList');if(!el)return;el.innerHTML='';for(const k in BIND_DEF){const n=document.createElement('span');n.className='bName';n.textContent=BIND_NAME[k];el.appendChild(n);
+  [0,1].forEach(s=>{const b=document.createElement('button');const w=bindWait&&bindWait.k===k&&bindWait.s===s;b.textContent=w?'PRESS…':keyLabel(SET.binds[k][s]);b.className=(w?'wait':'')+(SET.binds[k][s]?'':' empty');
+    b.addEventListener('click',e=>{e.stopPropagation();bindWait={k,s,t:performance.now()};renderBinds()});el.appendChild(b)})}}
+function setBind(code){const {k,s}=bindWait;bindWait=null;if(code){for(const o in SET.binds)SET.binds[o]=SET.binds[o].map(c=>c===code?'':c);SET.binds[k][s]=code}else SET.binds[k][s]='';syncSettings();renderBinds()}
+addEventListener('keydown',e=>{if(!bindWait)return;e.preventDefault();e.stopImmediatePropagation();if(e.code==='Escape'){bindWait=null;renderBinds()}else if(e.code==='Backspace'||e.code==='Delete')setBind('');else setBind(e.code)},{capture:true});
+addEventListener('mousedown',e=>{if(!bindWait||performance.now()-bindWait.t<150)return;e.preventDefault();e.stopImmediatePropagation();setBind('Mouse'+e.button)},{capture:true});
+$('#bindReset').addEventListener('click',()=>{SET.binds=JSON.parse(JSON.stringify(BIND_DEF));bindWait=null;syncSettings();renderBinds()});
+$('#setClose').addEventListener('pointerdown',()=>{bindWait=null},{capture:true});
+if(!matchMedia('(any-pointer: fine)').matches)$('#bindRow').hidden=true;
 $('#setClose').addEventListener('click',()=>show($('#settings'),false));
 $('#mSet').addEventListener('click',()=>openSettings('menu'));$('#pSet').addEventListener('click',()=>openSettings('pause'));
 
@@ -2770,12 +2844,13 @@ The Stitchworks factory is huge, dark and sealed. Restore power to the front gat
 Hide in lockers and toy chests and hold your breath when something stops outside. Crouch to move silently. Throw wind-up toys to lure Zippa away. Twelve little Stitch dolls are hidden around the building, if you are brave enough to look.
 
 PHONE: left thumb moves (push to the edge to run), right thumb looks. Buttons on the right: USE, LIGHT, CROUCH, THROW.
-PC: click to look · WASD move · SHIFT run · C crouch · E use · F flashlight · G throw · SPACE hold breath · J journal · M map.`;
+PC: {PCKEYS}`;
 function showRoamIntro(cp){hideAll();G.mode='roam';G.state='intro';G.roamCP=cp;show(ui.intro,true);ui.introHd.innerHTML=cp?'AFTER HOURS<br><b>CONTINUE</b>':`AFTER HOURS<br><b>${D().label}</b>`;
-  const txt=cp?`You wake up where you last caught your breath.\n\nPages found: ${cp.journal.length}/${JORDER.length} · Fuses in the box: ${cp.inserted}/3 · Dolls: ${cp.dolls||0}/${DOLLS}`:ROAM_MEMO;ui.memo.textContent='';let i=0;clearInterval(showIntro._t);showIntro._t=setInterval(()=>{i+=6;ui.memo.textContent=txt.slice(0,i);if(i>=txt.length)clearInterval(showIntro._t)},16);A.ambient(.25);A.music(0)}
+  const txt=cp?`You wake up where you last caught your breath.\n\nPages found: ${cp.journal.length}/${JORDER.length} · Fuses in the box: ${cp.inserted}/3 · Dolls: ${cp.dolls||0}/${DOLLS}`:ROAM_MEMO.replace('{PCKEYS}',pcKeys());ui.memo.textContent='';let i=0;clearInterval(showIntro._t);showIntro._t=setInterval(()=>{i+=6;ui.memo.textContent=txt.slice(0,i);if(i>=txt.length)clearInterval(showIntro._t)},16);A.ambient(.25);A.music(0)}
 function startRoam(cp){rui.end.querySelector('.big').textContent='ESCAPED';clearInterval(showIntro._t);hideAll();G.mode='roam';G.state='roam';applyState(cp);
   show(rui.hud,true);show(rui.touch,true);A.ambient(1);A.fan(0);A.mbox.on=true;A.mbox.t=.4;A.mbox.i=0;A.music(0);A.buzz(0);A.static(0);
   const u=postMat.uniforms;u.uDark.value=0;u.uRed.value=0;u.uWarp.value=0;u.uStatic.value=0;u.uAberr.value=.0015;u.uCam.value=0;L.scare.intensity=0;ui.flash.style.opacity=0;
+  if(!cp&&!MP.on)accStat({runs:1});
   if(!cp){setTimeout(()=>G.state==='roam'&&rtoast(isTouch?'Left thumb to move, right thumb to look. Grab the floor plan on the wall.':'Click to look around. WASD to move. Grab the floor plan on the wall.',5),800);RS.cp=snapshot()}
   last=performance.now()}
 
@@ -2915,7 +2990,7 @@ function updJack(dt,tm){const j=JK;
 function jackWarnFx(dt,tm){const j=JK;if(!j.g)return;j.bellT-=dt;if(j.bellT<=0){j.bellT=.45;const s=spat(j.g.x,j.g.z);A.bells(Math.min(1,s.vol*3),s.pan)}j.g.eyes.forEach(e=>e.visible=Math.sin(tm*12)>0)}
 function placeJack(g,k){J.root.visible=true;J.root.position.set(g.x,0,g.z);J.root.rotation.set(0,Math.atan2(g.ox,g.oz),0);poseJack(J,'vent',performance.now()/1000);setSpring(J,new V3(0,.42,-1.3),new V3(0,0,1),.8+k*1.0);J.P.jaw.rotation.x=.5}
 function roamAttack(who){if(MP.on&&(G.state==='reading'||G.state==='paused')){closeOverlays();show(ui.pause,false);show($('#settings'),false);G.state='roam'}if(G.state!=='roam'||PL.down||PL.escaped)return;show($('#pingMenu'),false);if(PL.hidden){show(rui.hideOv,false);show(rui.hideBtns,false)}show(rui.hud,false);show(rui.touch,false);exitLock();startScare(who)}
-function roamEscape(){if(MP.on){mpEscaped();return}$('#rEndMenu').textContent='MAIN MENU';G.state='end';hideAll();exitLock();A.mbox.on=false;A.music(0);A.dread(0);A.ambient(0);A.chime();clearSaved();const m=Math.floor(RS.time/60),s=Math.floor(RS.time%60);
+function roamEscape(){if(MP.on){mpEscaped();return}accStat({escapes:1},{bestTime:Math.round(RS.time)},{dolls:RS.dolls||0});$('#rEndMenu').textContent='MAIN MENU';G.state='end';hideAll();exitLock();A.mbox.on=false;A.music(0);A.dread(0);A.ambient(0);A.chime();clearSaved();const m=Math.floor(RS.time/60),s=Math.floor(RS.time%60);
   const all=RS.journal.length===JORDER.length,dolls=RS.dolls===DOLLS;let seenCount=0;for(let i=0;i<SEEN.length;i++)if(SEEN[i]&&grid[(i/RW)|0][i%RW]!=='#')seenCount++;
   rui.endTxt.innerHTML=`You squeeze under the gate into the grey morning. Behind you, something presses its stitched face against the bars and does not let go.<br><br>Difficulty: ${D().label} · Time: ${m}:${String(s).padStart(2,'0')}<br>Journal pages: ${RS.journal.length}/${JORDER.length} · Stitch dolls: ${RS.dolls}/${DOLLS} · Explored: ${Math.round(seenCount/1880*100)}%${all?'<br><br>You read everything Hollis left behind. The toys were never broken. They were made to love, and nobody ever came back for them.':''}${dolls?'<br><br>All twelve Stitch dolls ride home in your jacket pockets. You can hear them humming.':''}`;show(rui.end,true)}
 $('#rEndMenu').addEventListener('click',()=>{if(MP.room)openLobby();else toMenu()});
@@ -2946,8 +3021,8 @@ function roamPost(tm,dt){
 // =====================================================================
 // CO-OP MULTIPLAYER (up to 5) — Firebase Realtime Database relay
 // =====================================================================
-const FIREBASE_CONFIG={apiKey:"AIzaSyBGg_BwcQphZ_nY4eDT2owa71MY01fSMkw",authDomain:"syncwave-83ac4.firebaseapp.com",databaseURL:"https://syncwave-83ac4-default-rtdb.firebaseio.com",projectId:"syncwave-83ac4",storageBucket:"syncwave-83ac4.firebasestorage.app",messagingSenderId:"646300095464",appId:"1:646300095464:web:54009840db654a8c6a0a5d"};
-const NET_ROOT='stitchworks/rooms';
+const FIREBASE_CONFIG={apiKey:"AIzaSyBwU5REOqEP0zlUANQ_MtpO_AsFoR7Alko",authDomain:"stitchworks-e505c.firebaseapp.com",databaseURL:"https://stitchworks-e505c-default-rtdb.firebaseio.com",projectId:"stitchworks-e505c",storageBucket:"stitchworks-e505c.firebasestorage.app",messagingSenderId:"417994791480",appId:"1:417994791480:web:376c7befe347b4c44164cd"};
+const NET_ROOT='rooms';
 const MAXP=5;
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;const t=setTimeout(()=>{s.remove();rej(new Error('timeout '+src))},15000);s.onload=()=>{clearTimeout(t);res()};s.onerror=()=>{clearTimeout(t);s.remove();rej(new Error('could not load '+src))};document.head.appendChild(s)})}
 function wrapFb(r){return{key:r.key,set:v=>r.set(v),update:o=>r.update(o),remove:()=>r.remove(),child:p=>wrapFb(r.child(p)),
@@ -2959,10 +3034,44 @@ async function firebaseNet(){
   const ok=()=>window.firebase&&firebase.initializeApp&&firebase.auth&&firebase.database;
   if(!ok()){let last;for(const h of hosts){try{if(!(window.firebase&&firebase.initializeApp))await loadScript(h+'firebase-app-compat.js');if(!firebase.auth)await loadScript(h+'firebase-auth-compat.js');if(!firebase.database)await loadScript(h+'firebase-database-compat.js');break}catch(e){last=e}}if(!ok())throw last||new Error('Firebase did not load')}
   const app=firebase.apps.find(a=>a.name==='stitchworks')||firebase.initializeApp(FIREBASE_CONFIG,'stitchworks');
-  const auth=app.auth();if(!auth.currentUser)await Promise.race([auth.signInAnonymously(),new Promise((_,r)=>setTimeout(()=>r(new Error('Sign-in timed out')),12000))]);
+  const auth=app.auth();await Promise.race([new Promise(res=>{const un=auth.onAuthStateChanged(u=>{un();res(u)})}),new Promise(res=>setTimeout(res,6000))]);if(!auth.currentUser)await Promise.race([auth.signInAnonymously(),new Promise((_,r)=>setTimeout(()=>r(new Error('Sign-in timed out')),12000))]);
   const db=app.database();let off=0;db.ref('.info/serverTimeOffset').on('value',s=>off=s.val()||0);
   return{kind:'firebase',uid:auth.currentUser.uid,ref:p=>wrapFb(db.ref(p)),now:()=>Date.now()+off};
 }
+// ---------- guard accounts: play as a guest, or sign in (Google or email) to keep a callsign and stats on every device ----------
+const ACC={app:null,user:null,profile:null,ready:null,unsub:null};
+const accGuest=()=>!ACC.user||ACC.user.isAnonymous;
+function accInit(){if(ACC.ready)return ACC.ready;ACC.ready=(async()=>{if(!MP.net&&!wantLocal()){MP.net=await firebaseNet();MP.pid=MP.net.uid}else if(!window.firebase||!firebase.apps.find(a=>a.name==='stitchworks'))await firebaseNet();
+  ACC.app=firebase.app('stitchworks');const auth=ACC.app.auth();ACC.user=auth.currentUser;
+  auth.onAuthStateChanged(u=>{ACC.user=u;if(u&&MP.net&&MP.net.kind==='firebase'){MP.net.uid=u.uid;if(!MP.room)MP.pid=u.uid}accLoad()});
+  try{const r=await auth.getRedirectResult();if(r&&r.user)accMsg('Signed in.')}catch(e){accMsg(accErr(e),true)}
+  await accLoad();return ACC})().catch(e=>{ACC.ready=null;throw e});return ACC.ready}
+function accRef(p=''){return ACC.app.database().ref('users/'+ACC.user.uid+(p?'/'+p:''))}
+async function accLoad(){if(ACC.unsub){ACC.unsub();ACC.unsub=null}ACC.profile=null;if(!ACC.user||accGuest()){renderAcct();return}
+  try{localStorage.setItem('stitchworks.acct','1')}catch(e){}const ref=accRef();const f=s=>{ACC.profile=s.val()||{};renderAcct()};ref.on('value',f);ACC.unsub=()=>ref.off('value',f);
+  const snap=await ref.once('value');if(!snap.exists()){const n=(ACC.user.displayName||(localStorage.getItem('stitchworks.name')||'Guard')).slice(0,18);await ref.set({name:n,created:firebase.database.ServerValue.TIMESTAMP,stats:{}})}}
+function accSetName(n){if(accGuest()||!ACC.app)return;accRef('name').set(String(n).slice(0,18)).catch(()=>{})}
+// add counters; second object keeps the lowest value (best time), third keeps the highest (most dolls)
+function accStat(add,low,high){if(accGuest()||!ACC.app)return;accRef('stats').transaction(s=>{s=s||{};for(const k in add||{})s[k]=(s[k]||0)+add[k];for(const k in low||{})if(low[k]>0&&(!s[k]||low[k]<s[k]))s[k]=low[k];for(const k in high||{})if(high[k]>(s[k]||0))s[k]=high[k];return s}).catch(()=>{})}
+function accErr(e){const c=e&&e.code||'';return({'auth/wrong-password':'That password is not right.','auth/invalid-credential':'Email or password is not right.','auth/user-not-found':'No account uses that email yet. Tap CREATE ACCOUNT.','auth/email-already-in-use':'An account already uses that email. Tap SIGN IN instead.','auth/weak-password':'Use a password of at least 6 characters.','auth/invalid-email':'That email address does not look right.','auth/popup-closed-by-user':'Sign-in window closed.','auth/operation-not-allowed':'This sign-in method is not switched on in Firebase yet.','auth/unauthorized-domain':'This website is not on the Firebase authorized domains list yet.','auth/network-request-failed':'No connection. Check your internet and try again.','auth/too-many-requests':'Too many tries. Wait a minute and try again.'})[c]||(e&&e.message)||'Something went wrong.'}
+function accMsg(t,err){const el=$('#acctStatus');if(el){el.textContent=t||'';el.classList.toggle('err',!!err)}}
+async function accGoogle(){accMsg('Opening Google sign-in...');try{await accInit();const auth=ACC.app.auth(),pr=new firebase.auth.GoogleAuthProvider();
+  try{if(auth.currentUser&&auth.currentUser.isAnonymous)await auth.currentUser.linkWithPopup(pr);else await auth.signInWithPopup(pr)}
+  catch(e){if(e.code==='auth/credential-already-in-use'||e.code==='auth/email-already-in-use'){const cred=e.credential;if(cred)await auth.signInWithCredential(cred);else await auth.signInWithPopup(pr)}else if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){await auth.signInWithRedirect(pr);return}else throw e}
+  accMsg('Signed in.')}catch(e){accMsg(accErr(e),true)}}
+async function accEmail(create){const em=$('#acctEmail').value.trim(),pw=$('#acctPass').value;if(!em||!pw){accMsg('Enter your email and a password.',true);return}accMsg(create?'Creating your account...':'Signing in...');
+  try{await accInit();const auth=ACC.app.auth();if(create){const cred=firebase.auth.EmailAuthProvider.credential(em,pw);if(auth.currentUser&&auth.currentUser.isAnonymous)await auth.currentUser.linkWithCredential(cred);else await auth.createUserWithEmailAndPassword(em,pw)}else await auth.signInWithEmailAndPassword(em,pw);
+    $('#acctPass').value='';accMsg(create?'Account created. Welcome, guard.':'Signed in.')}catch(e){accMsg(accErr(e),true)}}
+async function accReset(){const em=$('#acctEmail').value.trim();if(!em){accMsg('Type your email first, then tap FORGOT PASSWORD.',true);return}try{await accInit();await ACC.app.auth().sendPasswordResetEmail(em);accMsg('Password reset email sent.')}catch(e){accMsg(accErr(e),true)}}
+async function accSignOut(){try{await ACC.app.auth().signOut();try{localStorage.removeItem('stitchworks.acct')}catch(e){}await ACC.app.auth().signInAnonymously();accMsg('Signed out. You are playing as a guest.')}catch(e){accMsg(accErr(e),true)}}
+function renderAcct(){const scr=$('#acct');const lbl=$('#mAcct small');const g=accGuest();if(lbl)lbl.textContent=g?'GUEST · SIGN IN TO SAVE YOUR STATS':((ACC.profile&&ACC.profile.name)||'SIGNED IN').toUpperCase()+' · STATS & CALLSIGN';
+  if(!scr)return;show($('#acctOut'),g);show($('#acctIn'),!g);if(g)return;const p=ACC.profile||{},s=p.stats||{};
+  $('#acctWho').textContent=(ACC.user.email||ACC.user.displayName||'Signed in');if(document.activeElement!==$('#acctName'))$('#acctName').value=p.name||'';
+  const t=s.bestTime?`${Math.floor(s.bestTime/60)}:${String(s.bestTime%60).padStart(2,'0')}`:'—';
+  $('#acctStats').innerHTML=[['SOLO RUNS',s.runs||0],['SOLO ESCAPES',s.escapes||0],['BEST ESCAPE',t],['TEAM RUNS',s.teamRuns||0],['TEAM ESCAPES',s.teamEscapes||0],['TIMES CAUGHT',s.caught||0],['MOST DOLLS',`${s.dolls||0}/12`]].map(([k,v])=>`<div><b>${v}</b><span>${k}</span></div>`).join('')}
+function openAcct(){hideAll();G.state='acct';show($('#acct'),true);renderAcct();if(!ACC.ready){accMsg('Connecting...');accInit().then(()=>accMsg(accGuest()?'Playing as a guest. Sign in to keep your callsign and stats.':'')).catch(e=>accMsg('Could not reach the server: '+(e&&e.message||e),true))}}
+// someone who signed in before gets their profile back in the background
+try{if(localStorage.getItem('stitchworks.acct')&&!wantLocal())setTimeout(()=>accInit().catch(()=>{}),1500)}catch(e){}
 // Same API over BroadcastChannel, so several tabs on one device can play together (used for testing: add ?net=local)
 function localNet(){
   const bc=new BroadcastChannel('stitchworks-net');let tree={};const subs=new Set(),kids=new Set(),disc=new Set();const me='L'+Math.random().toString(36).slice(2,8);
@@ -3014,9 +3123,9 @@ function makeAvatar(i,name){const col=AV_COL[i%5];const g=new THREE.Group();g.us
 const lob={ready:$('#lobReady'),scr:$('#lobby'),status:$('#lobStatus'),join:$('#lobJoin'),room:$('#lobRoom'),name:$('#lobName'),code:$('#lobCodeIn'),codeTxt:$('#lobCodeTxt'),link:$('#lobLink'),list:$('#lobList'),start:$('#lobStart'),diff:$('#lobDiff')};
 try{lob.name.value=localStorage.getItem('stitchworks.name')||''}catch(e){}
 function lobStatus(t,err){lob.status.textContent=t;lob.status.classList.toggle('err',!!err)}
-function openLobby(prefill){hideAll();G.mode='roam';G.state='lobby';show(lob.scr,true);show(lob.join,!MP.room);show(lob.room,!!MP.room);if(prefill)lob.code.value=prefill;lobStatus(MP.room?'':'Pick a name, then create a room or join one with its code.');if(MP.room)renderLobby()}
+function openLobby(prefill){if(ACC.profile&&ACC.profile.name&&!lob.name.value)lob.name.value=ACC.profile.name;hideAll();G.mode='roam';G.state='lobby';show(lob.scr,true);show(lob.join,!MP.room);show(lob.room,!!MP.room);if(prefill)lob.code.value=prefill;lobStatus(MP.room?'':'Pick a name, then create a room or join one with its code.');if(MP.room)renderLobby()}
 async function ensureNet(){if(MP.net)return MP.net;lobStatus('Connecting...');MP.net=await(wantLocal()?localNet():firebaseNet());MP.pid=MP.net.uid;return MP.net}
-function myName(){const n=(lob.name.value||'').trim().slice(0,18)||('Guard '+(1+Math.floor(Math.random()*99)));lob.name.value=n;try{localStorage.setItem('stitchworks.name',n)}catch(e){}return n}
+function myName(){const n=(lob.name.value||'').trim().slice(0,18)||('Guard '+(1+Math.floor(Math.random()*99)));lob.name.value=n;try{localStorage.setItem('stitchworks.name',n)}catch(e){}accSetName(n);return n}
 const CODECH='ABCDEFGHJKLMNPQRSTUVWXYZ';
 async function createRoom(){A.init();try{const net=await ensureNet();let code,tries=0;do{code=Array.from({length:6},()=>CODECH[(Math.random()*CODECH.length)|0]).join('');tries++}while(tries<6&&await net.ref(NET_ROOT+'/'+code+'/meta').once());
     MP.host=true;await enterRoom(code,{host:MP.pid,state:'lobby',diff:SET.diff,run:0,created:net.now(),v:1})}catch(e){lobStatus(netErr(e),true)}}
@@ -3053,6 +3162,9 @@ $('#lobCreate').addEventListener('click',createRoom);$('#lobJoinBtn').addEventLi
 lob.code.addEventListener('input',()=>lob.code.value=lob.code.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,6));
 $('#lobBack').addEventListener('click',async()=>{await leaveRoom();toMenu()});$('#lobLeave').addEventListener('click',async()=>{await leaveRoom();openLobby()});
 lob.start.addEventListener('click',hostStart);
+$('#mAcct').addEventListener('click',openAcct);$('#acctBack').addEventListener('click',()=>toMenu());
+$('#acctGoogle').addEventListener('click',accGoogle);$('#acctSignIn').addEventListener('click',()=>accEmail(false));$('#acctCreate').addEventListener('click',()=>accEmail(true));$('#acctForgot').addEventListener('click',accReset);$('#acctOutBtn').addEventListener('click',accSignOut);
+$('#acctSave').addEventListener('click',()=>{const n=$('#acctName').value.trim().slice(0,18);if(!n){accMsg('Type a callsign first.',true);return}accSetName(n);lob.name.value=n;try{localStorage.setItem('stitchworks.name',n)}catch(e){}accMsg('Callsign saved.')});
 lob.ready.addEventListener('click',()=>{if(!MP.me)return;const r=!(MP.players[MP.pid]&&MP.players[MP.pid].r);MP.me.child('r').set(r?1:0);if(r&&MP.meta&&MP.meta.state==='play'&&MP.run!==MP.meta.run){MP.run=MP.meta.run;startRoamMP()}});
 $('#lobCopy').addEventListener('click',async()=>{const t=lob.link.textContent;try{await navigator.clipboard.writeText(t);lobStatus('Invite link copied.')}catch(e){const r=document.createRange();r.selectNodeContents(lob.link);const s=getSelection();s.removeAllRanges();s.addRange(r);lobStatus('Select and copy the link above.')}});
 $('#mCoop').addEventListener('click',()=>{A.init();openLobby()});
@@ -3086,7 +3198,7 @@ function onEvent(e){if(!e||!MP.on||e.ts<MP.joined-2000)return;const who=nameOf(e
 function nameOf(pid){if(pid===MP.pid)return MP.name;const p=MP.players[pid];return p?p.n:'Someone'}
 
 // ---------- run start / world sync ----------
-function startRoamMP(){if(MP.me)MP.me.child('r').set(0);MP.on=true;MP.ended=false;MP.gateSeen=false;MP.mb=0;MP.firstEscape=0;MP.downT=0;MP.spect=0;SET.diff=MP.meta.diff||'normal';
+function startRoamMP(){accStat({teamRuns:1});if(MP.me)MP.me.child('r').set(0);MP.on=true;MP.ended=false;MP.gateSeen=false;MP.mb=0;MP.firstEscape=0;MP.downT=0;MP.spect=0;SET.diff=MP.meta.diff||'normal';
   hideAll();show(lob.scr,false);startRoam(null);
   const w=MP.world||{};RS.code=w.code||RS.code;drawTags(RS.code);MP.mb=w.mb||0;
   const sp=[[15,33],[17,33],[15,35],[17,35],[16,34]][MP.idx%5];const [x,z]=at(...sp);PL.x=x;PL.z=z;PL.yaw=0;
@@ -3157,6 +3269,7 @@ async function mpEnd(kind){MP.ended=false;const all=[{name:MP.name,escaped:PL.es
 function showMpEnd(m){const r=m.result||{};G.state=m.state==='won'?'end':'over';hideAll();exitLock();A.mbox.on=false;A.music(0);A.dread(0);show($('#mpDown'),false);PL.down=false;PL.escaped=false;
   const mm=Math.floor((r.t||0)/60),ss=String((r.t||0)%60).padStart(2,'0');
   const txt=`Time ${mm}:${ss} · Pages ${r.pages||0}/${JORDER.length} · Stitch dolls ${r.dolls||0}/${DOLLS}<br><br>Made it out: ${(r.out||[]).map(escapeH).join(', ')||'nobody'}${(r.stuck||[]).length?`<br>Still inside: ${(r.stuck||[]).map(escapeH).join(', ')}`:''}`;
+  accStat(m.state==='won'?{teamEscapes:1}:{teamLosses:1});
   if(m.state==='won'){A.chime();rui.endTxt.innerHTML='The gate slams down behind your team. Through the bars, a row of stitched faces watches you go.<br><br>'+txt;show(rui.end,true);$('#rEndMenu').textContent='BACK TO LOBBY'}
   else{ui.overText.innerHTML='<b style="color:var(--bone)">CREW LOST.</b> No guards remain inside who can rescue the others.<br><br>'+txt;$('#oRetry').textContent='BACK TO LOBBY';show(ui.over,true);drawStatic()}
   rui.revive.hidden=true;MP.on=false;G.mode='roam'}
