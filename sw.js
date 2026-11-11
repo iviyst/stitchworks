@@ -1,5 +1,5 @@
 // Stitchworks offline cache. Change VERSION whenever you upload a new index.html.
-const VERSION='stitchworks-gh-v4';
+const VERSION='stitchworks-gh-v6';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png','icon-maskable-512.png','fabric.jpg','factory-keyart.jpg','grunge-block-height.jpg','grunge-block.jpg','grunge-enamel-height.jpg','grunge-enamel.jpg','grunge-steel-height.jpg','grunge-steel.jpg','grunge-tile-height.jpg','grunge-tile-roughness.jpg','grunge-tile.jpg','wood.jpg','zippa-model.txt','zippa-mr.jpg','zippa-scare.mp4','zippa-skin.jpg'];
 const CDN=/^https:\/\/(cdnjs\.cloudflare\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
